@@ -16,7 +16,7 @@ def json_to_hash(json_string)
 	elements = json_string.split(",")
 	elements.each do |segment|
 		pair = segment.split(":")
-		json_hash = {pair[0] => [pair[1}}
+		json_hash = {pair[0] => [pair[1]}
 	end
 	return json_hash
 end
