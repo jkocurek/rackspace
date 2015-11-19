@@ -2,16 +2,7 @@ require 'rubygems'
 require 'twitter_oauth'
 require 'resolv-replace.rb'
 require 'pp'
-
-def prepare_access_token(oauth_token, oauth_token_secret)
-    consumer = OAuth::Consumer.new('EEDHGG0XT6oDCDdwbW6Ib7woR', 'uoXiRTrfMIuyDCiPYyA071fQioueJlQynsmMf8LTPZRoYHdicQ', { :site => "https://api.twitter.com", :scheme => :header })
-     
-    token_hash = { :oauth_token => oauth_token, :oauth_token_secret => oauth_token_secret }
-    access_token = OAuth::AccessToken.from_hash(consumer, token_hash )
  
-    return access_token
-end
-
 def json_to_hash(json_string)
 	elements = json_string.split(",")
 	elements.each do |segment|
@@ -21,7 +12,28 @@ def json_to_hash(json_string)
 	return json_hash
 end
  
-access_token = prepare_access_token('3802678881-W9aw9XDDU42kaujISTkkoV6SzgZWpXzRo9oSDZc', 'xsGAeVuypdffoFNnFW9CTgaQnU4iWNohK7laC4DIA7D2S')
+client = TwitterOAuth::Client.new(
+  :consumer_key => 'f1QaAnhmWyfLHkJMbQ1N3SkZX',
+  :consumer_secret => 'rxPVRDouXHtYIOU4BvEIOkZiixY7k3DR4xFFxSRqWDILdz6cgV'
+)
+
+request_token = client.authentication_request_token(
+	:oauth_callback => 'oob'
+)
+
+puts request_token.authorize_url
+
+print 'Please visit the URL and enter the code: '
+code = gets.strip
+
+access_token = client.authorize(
+  request_token.token,
+  request_token.secret,
+  :oauth_verifier => code
+)
+
+client.authorized?
+=> true
  
 response = access_token.request(:get,"https://stream.twitter.com/1.1/statuses/sample.json")
 
